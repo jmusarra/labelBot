@@ -2,7 +2,9 @@
 
 
 import json, socket
+import keyring
 import requests
+from reportlab.pdfgen import canvas
 
 
 authUrl = "https://stagehouse.flexrentalsolutions.com/rest/core/authenticate"
@@ -30,17 +32,24 @@ while True:
         jdata = data.strip().decode('ascii')
         j=jdata.strip('\x01')
         if (json.loads(j)):
-            parsed = json.loads(j)
-            barcode=parsed['barcode']
+            parsedLabel = json.loads(j)
             try:
-	        r_auth = requests.post(authUrl, data=authData)
+                r_auth = requests.post(authUrl, data=authData)
             except Exception as e:
-	        print(e)
+                print(e)
             print("URL:" + r_auth.url + " - " + str(r_auth.status_code))
-            r_inquiry = requests.post(inquiryUrl, data=barcode)
-        print(json.dumps(parsed, indent=4, sort_keys=True))
+            r_inquiry = requests.post(inquiryUrl, data=parsedLabel['barcode'])
+        print(json.dumps(parsedLabel, indent=4, sort_keys=True))
     finally:
+        # Make a label, save it in web-accessible directory
+        c = canvas.Canvas("/home/jsm/label.pdf")
+        c.drawString(50,500,parsedLabel['itemName'])
+        c.drawString(50,400,parsedLabel['barcode'])
+        c.drawString(50,300,parsedLabel['manufacturer'])
+        c.drawString(50,200,parsedLabel['weight'])
+        c.drawString(50,100,"ONE HUNDRED SLASH FIFTY")
+        c.showPage()
+        c.save()
         # Clean up the connection
         connection.close()
-
 
