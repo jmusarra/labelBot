@@ -5,6 +5,7 @@ import json, socket
 import keyring
 import requests
 from reportlab.pdfgen import canvas
+from reportlab.graphics.barcode import code128
 
 
 authUrl = "https://stagehouse.flexrentalsolutions.com/rest/core/authenticate"
@@ -42,12 +43,13 @@ while True:
         print(json.dumps(parsedLabel, indent=4, sort_keys=True))
     finally:
         # Make a label, save it in web-accessible directory
-        c = canvas.Canvas("/var/www/html/labels/" + parsedLabel['itemName']+"_label.pdf")
+        c = canvas.Canvas("/var/www/html/labels/" + parsedLabel['itemName'].replace(' ','')+"_label.pdf")
+        bc=code128.Code128(parsedLabel['barcode'])
         c.drawString(100,730,"STAGE HOUSE - SCENERY LABEL DEMO")
         c.drawString(50,630,"ITEM NAME:")
         c.drawString(50,600,parsedLabel['itemName'])
         c.drawString(50,530,"BARCODE:")
-        c.drawString(50,500,parsedLabel['barcode'])
+        bc.drawOn(c,50,500)
         c.drawString(50,430,"MANUFACTURER:")
         c.drawString(50,400,parsedLabel['manufacturer'])
         c.drawString(50,330,"WEIGHT:")
