@@ -5,7 +5,10 @@ import json, socket
 import keyring
 import requests
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 from reportlab.graphics.barcode import code128
+from reportlab.platypus import Image
+from reportlab.lib.units import inch
 
 
 authUrl = "https://stagehouse.flexrentalsolutions.com/rest/core/authenticate"
@@ -43,16 +46,16 @@ while True:
         print(json.dumps(parsedLabel, indent=4, sort_keys=True))
     finally:
         # Make a label, save it in web-accessible directory
-        c = canvas.Canvas("/var/www/html/labels/" + parsedLabel['itemName'].replace(' ','')+"_label.pdf")
-        bc=code128.Code128(parsedLabel['barcode'])
-        c.drawString(100,730,"STAGE HOUSE - SCENERY LABEL DEMO")
-        c.drawString(50,630,"ITEM NAME:")
-        c.drawString(50,600,parsedLabel['itemName'])
-        c.drawString(50,530,"BARCODE:")
-        bc.drawOn(c,50,500)
-        c.drawString(50,430,"MANUFACTURER:")
-        c.drawString(50,400,parsedLabel['manufacturer'])
-        c.drawString(50,330,"WEIGHT:")
+        c = canvas.Canvas("/var/www/html/labels/" + parsedLabel['itemName'].replace(' ','')+"_label.pdf",pagesize=letter)
+        c.setFont("Helvetica",30)
+        bc=code128.Code128(parsedLabel['barcode'],barHeight=0.75*inch,barWidth=1.5)
+        c.drawImage("resources/header.jpg",10,660)
+        c.drawCentredString(300,630,"ITEM NAME:")
+        c.drawCentredString(300,600,parsedLabel['itemName'])
+        bc.drawOn(c,225,500) # canvas, x, y
+        c.drawCentredString(300,430,"MANUFACTURER:")
+        c.drawCentredString(300,400,parsedLabel['manufacturer'])
+        c.drawCentredString(50,330,"WEIGHT:")
         c.drawString(50,300,parsedLabel['weight'])
         c.drawString(100,300,parsedLabel['height'])
         c.drawString(150,300,parsedLabel['length'])
