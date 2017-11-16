@@ -49,24 +49,25 @@ while True:
     finally:
         # Make a label, save it in web-accessible directory
         c = canvas.Canvas("/var/www/html/labels/" + parsedLabel['itemName'].replace(' ','')+"_label.pdf",pagesize=letter)
+        bc=code128.Code128(parsedLabel['barcode'],barHeight=0.75*inch,barWidth=1.5)
         labelFont = r"resources/RobotoCondensed-Bold.ttf"
         pdfmetrics.registerFont(TTFont("Roboto Condensed Bold",labelFont))
-        c.setFont("Helvetica",30)
-        bc=code128.Code128(parsedLabel['barcode'],barHeight=0.75*inch,barWidth=1.5)
         c.drawImage("resources/header.jpg",10,660)
+        c.setFont("Helvetica",24) # draw all caption text in 24pt Helvetica
         c.drawCentredString(300,630,"SHOW NAME:")
-        c.drawCentredString(300,600,parsedLabel['showName'])
         c.drawCentredString(300,530,"ITEM NAME:")
-        c.drawCentredString(300,500,parsedLabel['itemName'])
         c.drawCentredString(300,430,"MANUFACTURER:")
-        c.drawCentredString(300,400,parsedLabel['manufacturer'])
         c.drawString(30,330,"WEIGHT:")
-        c.drawString(30,300,parsedLabel['weight'])
         c.drawString(180,330,"HEIGHT:")
-        c.drawString(180,300,parsedLabel['height'])
         c.drawString(330,330,"LENGTH:")
-        c.drawString(330,300,parsedLabel['length'])
         c.drawString(480,330,"WIDTH:")
+        c.setFont("Roboto Condensed Bold",36)
+        c.drawCentredString(300,600,parsedLabel['showName'])
+        c.drawCentredString(300,500,parsedLabel['itemName'])
+        c.drawCentredString(300,400,parsedLabel['manufacturer'])
+        c.drawString(30,300,parsedLabel['weight'])
+        c.drawString(180,300,parsedLabel['height'])
+        c.drawString(330,300,parsedLabel['length'])
         c.drawString(480,300,parsedLabel['width'])
         bc.drawOn(c,225,200) # canvas, x, y
         c.showPage()
