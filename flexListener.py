@@ -14,6 +14,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 
 def inchesToFeet(i):
+    i = float(i)
     if (i > 12):
          feet = str(math.floor(i / 12)) + "ft"
          inches = str(i % 12) + "in"
@@ -81,10 +82,10 @@ while True:
         c.drawCentredString(300,590,parsedLabel['showName'])
         c.drawCentredString(300,490,parsedLabel['itemName'])
         c.drawCentredString(300,390,parsedLabel['manufacturer'])
-        c.drawString(30,290,parsedLabel['weight'])
-        c.drawString(180,290,parsedLabel['height'])
-        c.drawString(330,290,parsedLabel['length'])
-        c.drawString(480,290,parsedLabel['width'])
+        c.drawString(30,290,parsedLabel['weight']+"lbs") 
+        c.drawString(180,290,inchesToFeet(parsedLabel['height']))
+        c.drawString(330,290,inchesToFeet(parsedLabel['length']))
+        c.drawString(480,290,inchesToFeet(parsedLabel['width']))
         bc.drawOn(c,225,200) # canvas, x, y
         c.showPage()
         c.save()
